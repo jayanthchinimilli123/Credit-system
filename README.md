@@ -65,6 +65,19 @@ src/
   types/             Domain model
 ```
 
+## Deployment (Vercel)
+
+This repo is configured for **Vercel**. `vercel.json` adds an SPA rewrite so
+client-side routes (e.g. `/applications/APP-1042`) resolve on direct load and refresh.
+
+Once the repo is on GitHub and connected to Vercel, Vercel auto-detects the Vite
+setup (build: `vite build`, output: `dist`) and deploys on every push:
+
+- Push to `main` → **production** deploy
+- Push any other branch / open a PR → **preview** deploy with its own URL
+
+No secrets or environment variables are required (the prototype uses mock data).
+
 ## Mock customers
 
 Northstar Medical Supplies · Apex Industrial Parts · BlueWave Retail Group ·

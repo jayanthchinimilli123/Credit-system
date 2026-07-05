@@ -1,0 +1,12 @@
+# Normalize line endings to LF in the repo (silences CRLF warnings on Windows,
+# keeps diffs clean across machines).
+* text=auto eol=lf
+
+# Treat common binaries as binary (never normalize).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
