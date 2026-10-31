@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------
 // Canonical seed dataset for the CreditFlow AI database.
 // The API seeds Postgres from this on first run; the frontend no longer ships
-// this data — it reads everything from the database via /api.
+// this data - it reads everything from the database via /api.
 // Types are imported type-only (no path alias) so the serverless bundle builds.
 // ---------------------------------------------------------------------------
 import type {
@@ -18,7 +18,7 @@ export const seedApplications: CustomerApplication[] = [
     id: "APP-1042",
     customerName: "Northstar Medical Supplies",
     industry: "Healthcare Distribution",
-    region: "US — Midwest",
+    region: "US, Midwest",
     erpAccountId: "ERP-NM-88231",
     requestedCreditLimit: 250_000,
     currentCreditLimit: 100_000,
@@ -41,7 +41,7 @@ export const seedApplications: CustomerApplication[] = [
     id: "APP-1043",
     customerName: "Apex Industrial Parts",
     industry: "Manufacturing",
-    region: "US — Northeast",
+    region: "US, Northeast",
     erpAccountId: "ERP-AI-40127",
     requestedCreditLimit: 500_000,
     currentCreditLimit: 300_000,
@@ -64,7 +64,7 @@ export const seedApplications: CustomerApplication[] = [
     id: "APP-1044",
     customerName: "BlueWave Retail Group",
     industry: "Retail",
-    region: "US — West",
+    region: "US, West",
     erpAccountId: "ERP-BW-71904",
     requestedCreditLimit: 75_000,
     currentCreditLimit: 50_000,
@@ -87,7 +87,7 @@ export const seedApplications: CustomerApplication[] = [
     id: "APP-1045",
     customerName: "Horizon BuildCo",
     industry: "Construction",
-    region: "US — South",
+    region: "US, South",
     erpAccountId: "ERP-HB-55620",
     requestedCreditLimit: 200_000,
     currentCreditLimit: 80_000,
@@ -110,7 +110,7 @@ export const seedApplications: CustomerApplication[] = [
     id: "APP-1046",
     customerName: "Summit Electronics",
     industry: "Wholesale Electronics",
-    region: "US — West",
+    region: "US, West",
     erpAccountId: "ERP-SE-33418",
     requestedCreditLimit: 350_000,
     currentCreditLimit: 150_000,
@@ -202,7 +202,7 @@ export const seedRecommendations: Recommendation[] = [
       "Low open balance relative to requested limit",
       "No disputes or past-due invoices on record",
     ],
-    riskIfApproved: ["Minimal — exposure remains well within policy"],
+    riskIfApproved: ["Minimal risk; exposure remains well within policy"],
     riskIfDeclined: ["Unnecessary friction for a reliable, growing account"],
     requiredReviewerRole: "Credit Manager",
     status: "pending_review",

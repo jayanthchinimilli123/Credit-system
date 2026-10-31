@@ -4,7 +4,7 @@ import { api, type LeadPayload } from "@/lib/api";
 import { Button } from "./ui/Button";
 import { FieldGroup, Input, Select, Textarea } from "./ui/Field";
 
-const teamSizes = ["1–10", "11–50", "51–200", "201–1,000", "1,000+"];
+const teamSizes = ["1-10", "11-50", "51-200", "201-1,000", "1,000+"];
 
 export function LeadForm() {
   const [form, setForm] = useState<LeadPayload>({

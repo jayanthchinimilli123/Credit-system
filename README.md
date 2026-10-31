@@ -1,6 +1,6 @@
 # CreditFlow AI
 
-A **full-stack, database-driven web application** — a *human-in-the-loop credit risk review
+A **full-stack, database-driven web application** - a *human-in-the-loop credit risk review
 platform* for credit managers. AI generates credit recommendations (risk level, suggested
 limit, confidence, reasoning, and source context), but the human reviewer always **accepts,
 edits, declines, overrides, escalates, or requests more information**, and every action is
@@ -11,7 +11,7 @@ the review workspace lives under `/app`.
 
 > AI speeds up credit review, but the credit manager remains in control of the final decision.
 
-This is a portfolio demo using **sample data only** — it does not perform real credit
+This is a portfolio demo using **sample data only** - it does not perform real credit
 scoring, connect to real ERP systems, or use real customer financial data.
 
 ## Stack
@@ -19,7 +19,7 @@ scoring, connect to real ERP systems, or use real customer financial data.
 **Frontend**
 - React 18 + TypeScript
 - Vite (dev server / bundler)
-- React Router — `/` (landing), `/app`, `/app/applications/:id`, `/app/applications/:id/audit`, `/app/policy-rules`
+- React Router - `/` (landing), `/app`, `/app/applications/:id`, `/app/applications/:id/audit`, `/app/policy-rules`
 - Tailwind CSS (calm, enterprise design system), lucide-react icons
 
 **Backend**
@@ -63,7 +63,7 @@ npm run preview   # preview the production build
 ## Database
 
 The app expects a Postgres connection string in **`DATABASE_URL`** (also accepts
-`POSTGRES_URL`). On Vercel, add **Neon** from the project's **Storage** tab — the connection
+`POSTGRES_URL`). On Vercel, add **Neon** from the project's **Storage** tab - the connection
 string is injected automatically. On first request the API creates its tables and seeds the
 five sample customers; no manual migration step is needed.
 
@@ -88,7 +88,7 @@ src/
   hooks/             useApplicationBundle
   lib/               api client, formatting, label maps + tones, cn()
   pages/             Landing, Queue, Profile, Audit, PolicyRules, NotFound
-  store/             AppStore — API-backed application list
+  store/             AppStore - API-backed application list
   types/             Shared domain model (frontend + API)
 ```
 

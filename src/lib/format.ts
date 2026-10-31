@@ -1,6 +1,6 @@
 /** Format a number as whole-dollar USD. Returns an em dash for null. */
 export function currency(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "-";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -15,7 +15,7 @@ export function percent(value: number): string {
 
 /** Multiplier of requested vs current limit, e.g. "2.5x". */
 export function limitMultiple(requested: number, current: number): string {
-  if (!current) return "—";
+  if (!current) return "-";
   return `${(requested / current).toFixed(1)}x`;
 }
 

@@ -128,7 +128,7 @@ export async function createLead(input: LeadInput): Promise<{ id: string }> {
 }
 
 // ---------------------------------------------------------------------------
-// Decision engine (status transitions + audit generation) — server-side
+// Decision engine (status transitions + audit generation) - server-side
 // ---------------------------------------------------------------------------
 function resolveStatuses(
   decisionType: DecisionType,
@@ -243,7 +243,7 @@ function mapDecision(row: any): HumanDecision {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 function currency(value: number | null): string {
-  if (value === null || value === undefined) return "—";
+  if (value === null || value === undefined) return "-";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",

@@ -54,7 +54,7 @@ export function DecisionOutcomeBanner({ app, recommendation, decision }: Props) 
   const v = outcomeVisual(app);
 
   const summary = [
-    `CreditFlow AI — Decision Summary`,
+    `CreditFlow AI Decision Summary`,
     `Customer: ${app.customerName} (${app.erpAccountId})`,
     `Decision: ${decisionTypeLabel[decision.decisionType]}`,
     `Final approved limit: ${currency(decision.approvedLimit)}`,
@@ -125,7 +125,7 @@ export function DecisionOutcomeBanner({ app, recommendation, decision }: Props) 
           {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
           {copied ? "Copied" : "Copy decision summary"}
         </Button>
-        <Button variant="subtle" size="sm" disabled title="Placeholder — no real ERP in this prototype">
+        <Button variant="subtle" size="sm" disabled title="Placeholder: no real ERP in this prototype">
           <RefreshCw className="h-3.5 w-3.5" />
           Sync to ERP
         </Button>

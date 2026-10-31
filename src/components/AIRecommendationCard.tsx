@@ -143,7 +143,7 @@ export function AIRecommendationCard({ recommendation, decided, onSelectAction }
       {/* Decision controls */}
       <div className="border-t border-slate-100 bg-slate-50/60 px-5 py-4">
         <div className="mb-2 text-xs font-medium text-slate-500">
-          {decided ? "Decision recorded — reopen to change" : "Choose an action"}
+          {decided ? "Decision recorded. Reopen to change." : "Choose an action"}
         </div>
         <div className="flex flex-wrap gap-2">
           {primaryActions.map((a) => (

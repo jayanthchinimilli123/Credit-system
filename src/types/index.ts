@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// CreditFlow AI — domain model
+// CreditFlow AI - domain model
 // All shapes are frontend-only mock contracts (no backend / real scoring).
 // ---------------------------------------------------------------------------
 

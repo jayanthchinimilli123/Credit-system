@@ -5,7 +5,7 @@ import { RiskLevelBadge, PriorityBadge } from "./RiskLevelBadge";
 import { currency } from "@/lib/format";
 import { LinkButton } from "./ui/LinkButton";
 
-// Card variant of a queue row — used on narrow viewports.
+// Card variant of a queue row - used on narrow viewports.
 export function ApplicationCard({ app }: { app: CustomerApplication }) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-card">

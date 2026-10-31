@@ -26,7 +26,7 @@ function connectionString(): string {
   );
 }
 
-// Which DB-related env var names are present (names only — never values).
+// Which DB-related env var names are present (names only - never values).
 export function dbEnvPresence(): Record<string, boolean> {
   return {
     DATABASE_URL: !!process.env.DATABASE_URL,
@@ -69,6 +69,9 @@ export function ensureReady(): Promise<void> {
   if (!readyPromise) readyPromise = bootstrap();
   return readyPromise;
 }
+
+// Bump to force a re-seed of the demo data on the next deploy (preserves leads).
+const SEED_VERSION = "2";
 
 async function bootstrap(): Promise<void> {
   await sql`CREATE TABLE IF NOT EXISTS applications (
@@ -133,10 +136,18 @@ async function bootstrap(): Promise<void> {
     created_at timestamptz NOT NULL DEFAULT now()
   )`;
 
-  const rows = (await sql`SELECT count(*)::int AS count FROM applications`) as {
-    count: number;
+  await sql`CREATE TABLE IF NOT EXISTS meta (key text PRIMARY KEY, value text)`;
+
+  // Re-seed the demo tables when the seed version changes (leads are preserved).
+  const verRows = (await sql`SELECT value FROM meta WHERE key = 'seed_version'`) as {
+    value: string;
   }[];
-  if (rows[0]?.count === 0) await seed();
+  if (verRows[0]?.value !== SEED_VERSION) {
+    await sql`TRUNCATE applications, recommendations, risk_signals, source_context, audit_events, policy_rules, decisions`;
+    await seed();
+    await sql`INSERT INTO meta (key, value) VALUES ('seed_version', ${SEED_VERSION})
+      ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value`;
+  }
 }
 
 async function seed(): Promise<void> {

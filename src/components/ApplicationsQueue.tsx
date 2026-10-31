@@ -58,7 +58,7 @@ export function ApplicationsQueue({ apps }: { apps: CustomerApplication[] }) {
 
   return (
     <div className="space-y-5">
-      {/* Summary strip — deliberately minimal, not a dashboard */}
+      {/* Summary strip - deliberately minimal, not a dashboard */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatChip
           icon={Clock3}

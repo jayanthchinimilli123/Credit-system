@@ -55,7 +55,7 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
       ...init,
     });
   } catch {
-    throw new ApiError("Network error — could not reach the server.", 0);
+    throw new ApiError("Network error. Could not reach the server.", 0);
   }
 
   const text = await res.text();

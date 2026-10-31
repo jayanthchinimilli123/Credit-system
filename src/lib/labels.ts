@@ -121,7 +121,7 @@ export const reasonCodeLabel: Record<ReasonCode, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// Badge color tokens (calm, enterprise palette — soft fills, no neon)
+// Badge color tokens (calm, enterprise palette - soft fills, no neon)
 // ---------------------------------------------------------------------------
 
 type Tone = string;
