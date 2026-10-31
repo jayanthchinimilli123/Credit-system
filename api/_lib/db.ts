@@ -16,18 +16,49 @@ import {
   seedSourceContext,
 } from "./seed-data";
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  process.env.POSTGRES_URL ||
-  process.env.POSTGRES_PRISMA_URL ||
-  "";
-
-if (!connectionString) {
-  // Surfaced clearly in function logs if the DB env var is missing.
-  console.warn("[db] No DATABASE_URL / POSTGRES_URL configured.");
+function connectionString(): string {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    ""
+  );
 }
 
-export const sql = neon(connectionString);
+// Which DB-related env var names are present (names only — never values).
+export function dbEnvPresence(): Record<string, boolean> {
+  return {
+    DATABASE_URL: !!process.env.DATABASE_URL,
+    POSTGRES_URL: !!process.env.POSTGRES_URL,
+    POSTGRES_PRISMA_URL: !!process.env.POSTGRES_PRISMA_URL,
+    POSTGRES_URL_NON_POOLING: !!process.env.POSTGRES_URL_NON_POOLING,
+  };
+}
+
+// Lazily create the client so a missing connection string surfaces as a clean
+// JSON error inside a handler instead of crashing the function at import time.
+type SqlTag = ReturnType<typeof neon>;
+let _sql: SqlTag | null = null;
+
+function getSql(): SqlTag {
+  if (_sql) return _sql;
+  const cs = connectionString();
+  if (!cs) {
+    throw new Error(
+      "No database connection string. Set DATABASE_URL or POSTGRES_URL (Vercel → Storage → Neon).",
+    );
+  }
+  _sql = neon(cs);
+  return _sql;
+}
+
+// Tagged-template proxy that initializes the client on first use.
+export const sql: SqlTag = ((strings: TemplateStringsArray, ...params: unknown[]) =>
+  (getSql() as unknown as (s: TemplateStringsArray, ...p: unknown[]) => unknown)(
+    strings,
+    ...params,
+  )) as unknown as SqlTag;
 
 // ---------------------------------------------------------------------------
 // Schema + seed (idempotent; runs on first request per warm instance)
