@@ -20,7 +20,7 @@ import {
   mapRiskSignal,
   mapSourceContext,
   sql,
-} from "./db";
+} from "./db.js";
 
 export interface ApplicationBundle {
   application: CustomerApplication;

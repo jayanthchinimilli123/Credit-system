@@ -14,7 +14,7 @@ import {
   seedRecommendations,
   seedRiskSignals,
   seedSourceContext,
-} from "./seed-data";
+} from "./seed-data.js";
 
 function connectionString(): string {
   return (

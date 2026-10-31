@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { sendJson } from "./_lib/db";
-import { createLead } from "./_lib/repo";
+import { sendJson } from "./_lib/db.js";
+import { createLead } from "./_lib/repo.js";
 
 // Minimal email sanity check (not RFC-perfect — just guards obvious junk).
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

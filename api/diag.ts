@@ -15,9 +15,9 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
   }
 
   await tryImport("neon-pkg", () => import("@neondatabase/serverless"));
-  await tryImport("seed-data", () => import("./_lib/seed-data"));
-  await tryImport("db", () => import("./_lib/db"));
-  await tryImport("repo", () => import("./_lib/repo"));
+  await tryImport("seed-data", () => import("./_lib/seed-data.js"));
+  await tryImport("db", () => import("./_lib/db.js"));
+  await tryImport("repo", () => import("./_lib/repo.js"));
 
   res.setHeader("Content-Type", "application/json");
   res.status(200).send(JSON.stringify({ ok: true, results }, null, 2));

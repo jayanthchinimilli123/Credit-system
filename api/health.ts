@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { dbEnvPresence, ensureReady, sendJson, sql } from "./_lib/db";
+import { dbEnvPresence, ensureReady, sendJson, sql } from "./_lib/db.js";
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   const env = dbEnvPresence();

@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import type { DecisionType, ReasonCode } from "../../../src/types";
-import { sendJson } from "../../_lib/db";
-import { submitDecision } from "../../_lib/repo";
+import { sendJson } from "../../_lib/db.js";
+import { submitDecision } from "../../_lib/repo.js";
 
 const DECISION_TYPES: DecisionType[] = [
   "approved_as_recommended",

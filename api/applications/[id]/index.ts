@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { sendJson } from "../../_lib/db";
-import { getBundle } from "../../_lib/repo";
+import { sendJson } from "../../_lib/db.js";
+import { getBundle } from "../../_lib/repo.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
