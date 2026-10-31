@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Loader2 } from "lucide-react";
 import type {
   CustomerApplication,
   DecisionType,
@@ -12,7 +12,13 @@ import { Modal } from "./ui/Modal";
 import { Button } from "./ui/Button";
 import { FieldGroup, Input, Select, Textarea } from "./ui/Field";
 import { Badge } from "./ui/Badge";
-import type { SubmitDecisionInput } from "@/store/AppStore";
+
+export interface DecisionFormResult {
+  decisionType: DecisionType;
+  approvedLimit: number | null;
+  reasonCode: ReasonCode;
+  note: string;
+}
 
 interface Props {
   open: boolean;
@@ -20,7 +26,7 @@ interface Props {
   app: CustomerApplication;
   recommendation: Recommendation;
   presetDecision: DecisionType;
-  onSubmit: (input: SubmitDecisionInput) => void;
+  onSubmit: (result: DecisionFormResult) => Promise<void>;
 }
 
 const reasonCodes: ReasonCode[] = [
@@ -34,7 +40,6 @@ const reasonCodes: ReasonCode[] = [
   "senior_approval_required",
 ];
 
-// Which decisions involve an editable approved credit limit.
 function usesLimit(d: DecisionType): boolean {
   return (
     d === "approved_as_recommended" ||
@@ -78,14 +83,17 @@ export function DecisionModal({
   const [reasonCode, setReasonCode] = useState<ReasonCode>(defaultReason(presetDecision));
   const [note, setNote] = useState("");
   const [confirmOverride, setConfirmOverride] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Re-seed the form each time the modal opens with a new preset.
   useEffect(() => {
     if (!open) return;
     setDecisionType(presetDecision);
     setReasonCode(defaultReason(presetDecision));
     setNote("");
     setConfirmOverride(false);
+    setSubmitError(null);
+    setSubmitting(false);
     const seed =
       presetDecision === "declined" || presetDecision === "requested_more_information"
         ? null
@@ -108,45 +116,52 @@ export function DecisionModal({
     if (isOverride && !confirmOverride)
       e.push("Confirm that you are overriding the AI recommendation.");
     return e;
-  }, [decisionType, isLimitEditable, limitNumber, requiresNote, note, isOverride, confirmOverride]);
+  }, [decisionType, limitNumber, requiresNote, note, isOverride, confirmOverride]);
 
-  const canSubmit = errors.length === 0;
+  const canSubmit = errors.length === 0 && !submitting;
 
-  function handleSubmit() {
-    if (!canSubmit) return;
-    onSubmit({
-      applicationId: app.id,
-      decisionType,
-      approvedLimit: usesLimit(decisionType) ? limitNumber : null,
-      reasonCode,
-      note: note.trim(),
-    });
+  async function handleSubmit() {
+    if (errors.length > 0 || submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await onSubmit({
+        decisionType,
+        approvedLimit: usesLimit(decisionType) ? limitNumber : null,
+        reasonCode,
+        note: note.trim(),
+      });
+    } catch (e) {
+      setSubmitError(e instanceof Error ? e.message : "Failed to submit decision.");
+      setSubmitting(false);
+    }
   }
 
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={submitting ? () => {} : onClose}
       title="Human decision"
       description={`Review and confirm your decision for ${app.customerName}.`}
       size="lg"
       footer={
         <>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={submitting}>
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={!canSubmit}>
-            Confirm decision
+            {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+            {submitting ? "Submitting…" : "Confirm decision"}
           </Button>
         </>
       }
     >
       <div className="space-y-5">
-        {/* Decision type selector */}
         <FieldGroup label="Decision type" htmlFor="decisionType">
           <Select
             id="decisionType"
             value={decisionType}
+            disabled={submitting}
             onChange={(e) => {
               const next = e.target.value as DecisionType;
               setDecisionType(next);
@@ -161,7 +176,6 @@ export function DecisionModal({
           </Select>
         </FieldGroup>
 
-        {/* AI vs human limit summary */}
         <div className="grid grid-cols-2 gap-3 rounded-lg bg-slate-50 p-3.5">
           <div>
             <div className="text-[11px] uppercase tracking-wide text-slate-400">
@@ -181,7 +195,6 @@ export function DecisionModal({
           </div>
         </div>
 
-        {/* Approved limit */}
         {usesLimit(decisionType) && (
           <FieldGroup
             label={isLimitEditable(decisionType) ? "Your approved limit" : "Approved limit"}
@@ -201,18 +214,18 @@ export function DecisionModal({
                 inputMode="numeric"
                 className="pl-6"
                 value={approvedLimit}
-                disabled={!isLimitEditable(decisionType)}
+                disabled={!isLimitEditable(decisionType) || submitting}
                 onChange={(e) => setApprovedLimit(e.target.value)}
               />
             </div>
           </FieldGroup>
         )}
 
-        {/* Reason code */}
         <FieldGroup label="Reason code" htmlFor="reasonCode">
           <Select
             id="reasonCode"
             value={reasonCode}
+            disabled={submitting}
             onChange={(e) => setReasonCode(e.target.value as ReasonCode)}
           >
             {reasonCodes.map((r) => (
@@ -223,7 +236,6 @@ export function DecisionModal({
           </Select>
         </FieldGroup>
 
-        {/* Decision note */}
         <FieldGroup
           label={`Decision note${requiresNote ? " (required)" : " (optional)"}`}
           htmlFor="note"
@@ -232,17 +244,18 @@ export function DecisionModal({
             id="note"
             placeholder="Add context for audit and compliance…"
             value={note}
+            disabled={submitting}
             onChange={(e) => setNote(e.target.value)}
           />
         </FieldGroup>
 
-        {/* Override confirmation */}
         {isOverride && (
           <label className="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50/70 p-3.5">
             <input
               type="checkbox"
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600 focus-ring"
+              className="focus-ring mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-600"
               checked={confirmOverride}
+              disabled={submitting}
               onChange={(e) => setConfirmOverride(e.target.checked)}
             />
             <span className="text-sm text-amber-800">
@@ -252,11 +265,14 @@ export function DecisionModal({
           </label>
         )}
 
-        {/* Validation summary */}
-        {errors.length > 0 && (
-          <div className="flex items-start gap-2 rounded-lg bg-rose-50 px-3.5 py-2.5 text-sm text-rose-700">
+        {(errors.length > 0 || submitError) && (
+          <div
+            className="flex items-start gap-2 rounded-lg bg-rose-50 px-3.5 py-2.5 text-sm text-rose-700"
+            role="alert"
+          >
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <ul className="space-y-0.5">
+              {submitError && <li>{submitError}</li>}
               {errors.map((e) => (
                 <li key={e}>{e}</li>
               ))}
@@ -266,7 +282,8 @@ export function DecisionModal({
 
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <Badge tone="bg-slate-100 text-slate-500 ring-slate-500/20">Audit</Badge>
-          This decision will be logged to the audit trail with your name and timestamp.
+          This decision will be saved to the database and logged to the audit trail with
+          your name and timestamp.
         </div>
       </div>
     </Modal>

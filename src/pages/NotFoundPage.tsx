@@ -11,7 +11,7 @@ export function NotFoundPage() {
         title="Page not found"
         description="This route doesn't exist in the CreditFlow AI prototype."
         action={
-          <LinkButton to="/" size="sm">
+          <LinkButton to="/app" size="sm">
             Go to Applications Queue
           </LinkButton>
         }

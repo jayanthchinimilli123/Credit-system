@@ -1,24 +1,41 @@
 # CreditFlow AI
 
-A premium **B2B fintech SaaS prototype** — a *human-in-the-loop credit risk review platform*
-for credit managers. AI generates credit recommendations (risk level, suggested limit,
-confidence, reasoning, and source context), but the human reviewer always **accepts, edits,
-declines, overrides, escalates, or requests more information**, and every action is recorded
-to an audit trail.
+A **full-stack, database-driven web application** — a *human-in-the-loop credit risk review
+platform* for credit managers. AI generates credit recommendations (risk level, suggested
+limit, confidence, reasoning, and source context), but the human reviewer always **accepts,
+edits, declines, overrides, escalates, or requests more information**, and every action is
+persisted to a database and surfaced in an audit trail.
+
+A public marketing **landing page** with an **interactive lead-capture form** fronts the app;
+the review workspace lives under `/app`.
 
 > AI speeds up credit review, but the credit manager remains in control of the final decision.
 
-This is a **frontend prototype** built with mock data and local state. It does **not** perform
-real credit scoring, connect to real ERP systems, or use real customer financial data.
+This is a portfolio demo using **sample data only** — it does not perform real credit
+scoring, connect to real ERP systems, or use real customer financial data.
 
 ## Stack
 
-- **React 18** + **TypeScript**
-- **Vite** (dev server / bundler)
-- **React Router** (`/`, `/applications/:id`, `/applications/:id/audit`, `/policy-rules`)
-- **Tailwind CSS** (calm, enterprise design system)
-- **lucide-react** icons
-- Mock JSON-style fixtures + a React context store with `localStorage` persistence
+**Frontend**
+- React 18 + TypeScript
+- Vite (dev server / bundler)
+- React Router — `/` (landing), `/app`, `/app/applications/:id`, `/app/applications/:id/audit`, `/app/policy-rules`
+- Tailwind CSS (calm, enterprise design system), lucide-react icons
+
+**Backend**
+- Vercel Serverless Functions (`/api/*.ts`, TypeScript)
+- **Neon** serverless Postgres via `@neondatabase/serverless`
+- Schema is auto-created and seeded on first request (idempotent)
+
+**API**
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/api/applications` | List applications (queue) |
+| GET | `/api/applications/:id` | Full application bundle (recommendation, signals, sources, audit, matched policies, decision) |
+| POST | `/api/applications/:id/decision` | Submit a human decision (updates status, writes audit) |
+| GET | `/api/policy-rules` | List credit policy rules |
+| POST | `/api/leads` | Capture a demo-request lead |
+| GET | `/api/health` | DB connectivity + seed status |
 
 ## Getting started
 
@@ -26,57 +43,54 @@ Requires **Node.js 18+** and npm.
 
 ```bash
 npm install
-npm run dev      # start the dev server (http://localhost:5173)
+npm run dev      # frontend dev server (http://localhost:5173)
 ```
 
-Other scripts:
+> The serverless API (`/api`) runs on Vercel, not under plain `vite dev`. Locally, the
+> landing page works fully; the `/app` screens need the deployed API (or `vercel dev`
+> with a `DATABASE_URL`). The simplest way to exercise the full stack is a Vercel
+> preview/production deploy.
+
+Scripts:
 
 ```bash
-npm run build    # type-check + production build
-npm run preview  # preview the production build
-npm run lint     # type-check only (tsc --noEmit)
+npm run build     # type-check (frontend) + production build
+npm run lint      # frontend type-check (tsc --noEmit)
+npm run lint:api  # API type-check (tsc -p tsconfig.api.json)
+npm run preview   # preview the production build
 ```
 
-## Main flow
+## Database
 
-1. Open the **Applications Queue** (`/`) — customer applications sorted by urgency and risk.
-2. Open a **Client Credit Profile** — customer details, the AI recommendation, risk signals,
-   source context, confidence, and matched policy rules.
-3. Review the AI reasoning and the evidence behind it.
-4. Choose an action: **Accept / Edit limit / Decline / Override / Escalate / Request info**.
-5. Confirm in the **Decision Modal** (override requires a reason note + confirmation).
-6. The application status, recommendation status, and **Audit Trail** all update; a
-   **Decision Outcome** banner summarizes the result.
-
-Try editing a suggested limit (e.g. $175,000 → $150,000) on
-**Northstar Medical Supplies** and confirming — the queue row, profile, and audit trail
-all reflect the human decision. Decisions persist across reloads via `localStorage`.
-To clear all decisions, run `localStorage.removeItem("creditflow.overlay.v1")` in the console.
-
-## Project structure
-
-```
-src/
-  components/        UI + domain components (ui/ holds the primitives)
-  data/              Mock fixtures (applications, recommendations, signals, sources, audit, policy)
-  lib/               Formatting, label maps + tones, policy matching, cn()
-  pages/             QueuePage, ProfilePage, AuditPage, PolicyRulesPage, NotFoundPage
-  store/             AppStore — overlays human decisions on the mock data
-  types/             Domain model
-```
+The app expects a Postgres connection string in **`DATABASE_URL`** (also accepts
+`POSTGRES_URL`). On Vercel, add **Neon** from the project's **Storage** tab — the connection
+string is injected automatically. On first request the API creates its tables and seeds the
+five sample customers; no manual migration step is needed.
 
 ## Deployment (Vercel)
 
-This repo is configured for **Vercel**. `vercel.json` adds an SPA rewrite so
-client-side routes (e.g. `/applications/APP-1042`) resolve on direct load and refresh.
-
-Once the repo is on GitHub and connected to Vercel, Vercel auto-detects the Vite
-setup (build: `vite build`, output: `dist`) and deploys on every push:
+`vercel.json` rewrites non-API routes to `index.html` (SPA routing) while leaving `/api/*`
+to the serverless functions. Vercel auto-detects the Vite build.
 
 - Push to `main` → **production** deploy
 - Push any other branch / open a PR → **preview** deploy with its own URL
 
-No secrets or environment variables are required (the prototype uses mock data).
+## Project structure
+
+```
+api/                 Serverless functions + shared server code
+  _lib/              db (schema + seed), repo (queries, decision engine), seed-data
+  applications/      list, [id] bundle, [id]/decision
+  policy-rules.ts, leads.ts, health.ts
+src/
+  components/        UI + domain components (ui/ holds primitives)
+  data/              currentUser (the demo reviewer)
+  hooks/             useApplicationBundle
+  lib/               api client, formatting, label maps + tones, cn()
+  pages/             Landing, Queue, Profile, Audit, PolicyRules, NotFound
+  store/             AppStore — API-backed application list
+  types/             Shared domain model (frontend + API)
+```
 
 ## Mock customers
 
