@@ -113,11 +113,11 @@ export function DecisionOutcomeBanner({ app, recommendation, decision }: Props) 
       </div>
 
       <div className="flex flex-wrap gap-2 border-t border-slate-100 px-5 py-4">
-        <LinkButton to="/" variant="outline" size="sm">
+        <LinkButton to="/app" variant="outline" size="sm">
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to queue
         </LinkButton>
-        <LinkButton to={`/applications/${app.id}/audit`} variant="outline" size="sm">
+        <LinkButton to={`/app/applications/${app.id}/audit`} variant="outline" size="sm">
           <ScrollText className="h-3.5 w-3.5" />
           View audit trail
         </LinkButton>

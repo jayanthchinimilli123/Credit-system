@@ -30,7 +30,7 @@ export function ApplicationTable({ apps }: { apps: CustomerApplication[] }) {
           {apps.map((app) => (
             <tr
               key={app.id}
-              onClick={() => navigate(`/applications/${app.id}`)}
+              onClick={() => navigate(`/app/applications/${app.id}`)}
               className="group cursor-pointer transition-colors hover:bg-slate-50/70"
             >
               <td className="px-4 py-3">
@@ -70,7 +70,7 @@ export function ApplicationTable({ apps }: { apps: CustomerApplication[] }) {
               </td>
               <td className="px-4 py-3 text-right">
                 <LinkButton
-                  to={`/applications/${app.id}`}
+                  to={`/app/applications/${app.id}`}
                   size="sm"
                   variant="outline"
                   onClick={(e) => e.stopPropagation()}

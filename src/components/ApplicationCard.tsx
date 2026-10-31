@@ -50,7 +50,7 @@ export function ApplicationCard({ app }: { app: CustomerApplication }) {
           <Clock className="h-3.5 w-3.5" />
           {app.daysPending}d pending
         </span>
-        <LinkButton to={`/applications/${app.id}`} size="sm">
+        <LinkButton to={`/app/applications/${app.id}`} size="sm">
           Review
           <ArrowRight className="h-3.5 w-3.5" />
         </LinkButton>
